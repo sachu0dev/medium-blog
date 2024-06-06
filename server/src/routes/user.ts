@@ -5,6 +5,8 @@ import bcrypt from "bcryptjs";
 import { decode, sign, verify } from "hono/jwt";
 import api, { connectPrisma } from "../index";
 import { Hono } from "hono";
+import { signInInput, signUpInput } from "@sushilkashyap/medium-common";
+import { Suspense } from "hono/jsx";
 
 const userRouter = new Hono<{
   Bindings: {
@@ -12,21 +14,23 @@ const userRouter = new Hono<{
     JWT_SECRET: string;
   };
 }>();
-interface signupUser {
-  email: string;
-  name: string;
-  password: string;
-}
-interface signinUser {
-  email: string;
-  password: string;
-}
+// interface signupUser {
+//   email: string;
+//   name: string;
+//   password: string;
+// }
+// interface signinUser {
+//   email: string;
+//   password: string;
+// }
 // authmiddleware call
 
 // signup route
 userRouter.post("/signup", checkUser, async (c) => {
   const prisma = connectPrisma(c.env.DATABASE_URL);
-  const body: signupUser = await c.req.json();
+  const body = await c.req.json();
+  const { success } = signUpInput.safeParse(body);
+  if (!success) return c.json({ massage: "invalid user" });
   const hashedPassword = await bcrypt.hashSync(body.password, 10);
   await prisma.user.create({
     data: {
@@ -47,8 +51,10 @@ userRouter.post("/signup", checkUser, async (c) => {
 userRouter.post("/signin", async (c) => {
   try {
     const prisma = connectPrisma(c.env.DATABASE_URL);
-    const body: signinUser = await c.req.json();
+    const body = await c.req.json();
     if (body) {
+      const { success } = signInInput.safeParse(body);
+      if (!success) return c.json({ massage: "invalid user" });
       const user = await prisma.user.findUnique({
         where: {
           email: body.email,

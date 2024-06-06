@@ -1,7 +1,5 @@
 import { verify } from "hono/jwt";
 import { connectPrisma } from ".";
-import { Hono } from "hono";
-import { string } from "./index";
 
 // Middleware to check if the user exists
 export const checkUser = async (c, next) => {

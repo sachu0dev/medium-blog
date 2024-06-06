@@ -7,6 +7,7 @@ import api, { connectPrisma } from "../index";
 import { Hono } from "hono";
 import { connect } from "cloudflare:sockets";
 import { connectPrisma } from "..";
+import { createBlogInput, updateBlogInput } from "@sushilkashyap/medium-common";
 
 const blogRouter = new Hono<{
   Bindings: {
@@ -23,6 +24,8 @@ blogRouter.post("/post", async (c) => {
   const userId = c.get("userId");
 
   const body = await c.req.json();
+  const { success } = createBlogInput.safeParse(body);
+  if (!success) return c.json({ massage: "invalid Inputs" });
   const post = await primsa.post.create({
     data: {
       title: body.title,
@@ -39,7 +42,8 @@ blogRouter.put("/post/:id", async (c) => {
   const prisma = connectPrisma(c.env.DATABASE_URL);
   const body = await c.req.json();
   const postId = c.req.param("id");
-  console.log(postId);
+  const { success } = updateBlogInput.safeParse(body);
+  if (!success) return c.text("invalid input");
 
   const post = await prisma.post.update({
     where: {
