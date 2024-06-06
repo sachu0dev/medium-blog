@@ -1,5 +1,7 @@
+import { verify } from "hono/jwt";
 import { connectPrisma } from ".";
 import { Hono } from "hono";
+import { string } from "./index";
 
 // Middleware to check if the user exists
 export const checkUser = async (c, next) => {
@@ -28,5 +30,24 @@ export const checkUser = async (c, next) => {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
+  }
+};
+
+export const authMiddleware = async (c, next) => {
+  console.log("it reached here");
+
+  const token = await c.req.header("Authorization");
+  if (token !== undefined) {
+    const trimedToken = token.replace("Bearer ", "");
+    const decoded = await verify(trimedToken, "secret");
+    const user = await connectPrisma(c.env.DATABASE_URL).user.findUnique({
+      where: {
+        email: decoded.email,
+      },
+    });
+    if (user) {
+      c.set("userId", user.id);
+      await next();
+    }
   }
 };
