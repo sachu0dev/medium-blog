@@ -35,4 +35,48 @@ blogRouter.post("/post", async (c) => {
   });
 });
 
+blogRouter.put("/post/:id", async (c) => {
+  const prisma = connectPrisma(c.env.DATABASE_URL);
+  const body = await c.req.json();
+  const postId = c.req.param("id");
+  console.log(postId);
+
+  const post = await prisma.post.update({
+    where: {
+      id: postId,
+    },
+    data: {
+      title: body.title,
+      content: body.content,
+      published: body.published,
+    },
+  });
+  return c.json({
+    id: post.id,
+  });
+});
+
+blogRouter.get("/post/:id", async (c) => {
+  const prisma = connectPrisma(c.env.DATABASE_URL);
+  const postId = c.req.param("id");
+  console.log(postId);
+
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+  });
+  if (post !== null) {
+    return c.json(post);
+  }
+  return c.text("post not found");
+});
+
+blogRouter.get("/bulk", async (c) => {
+  const prisma = connectPrisma(c.env.DATABASE_URL);
+
+  const posts = await prisma.post.findMany();
+  return c.json(posts);
+});
+
 export default blogRouter;
