@@ -1,12 +1,12 @@
 import { Prisma, PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { authMiddleware, checkUser } from "./middleware";
+import { authMiddleware, checkUser } from "../middleware";
 import bcrypt from "bcryptjs";
 import { decode, sign, verify } from "hono/jwt";
-import api, { connectPrisma } from "./index";
+import api, { connectPrisma } from "../index";
 import { Hono } from "hono";
 import { connect } from "cloudflare:sockets";
-import { connectPrisma } from ".";
+import { connectPrisma } from "..";
 
 const blogRouter = new Hono<{
   Bindings: {

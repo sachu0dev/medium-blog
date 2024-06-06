@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { checkUser } from "./middleware";
+import { checkUser } from "../middleware";
 import bcrypt from "bcryptjs";
 import { decode, sign, verify } from "hono/jwt";
-import api, { connectPrisma } from "./index";
+import api, { connectPrisma } from "../index";
 import { Hono } from "hono";
 
 const userRouter = new Hono<{
