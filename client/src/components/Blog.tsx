@@ -40,9 +40,13 @@ export default function Blog() {
         <div className="w-4/6 h-screen p-4 ">
           <h1 className="text-5xl font-extrabold pr-8">{blog.title}</h1>
           <p className="my-4 font-semibold text-gray-500">
-            Posted on {"August 24, 2023"}
+            Posted on {blog.publishedDate.split("T")[0]}
           </p>
-          <p>{blog.content}</p>
+          {blog.content.split("\n").map((paragraph, index) => (
+            <p className="my-2 text-lg" key={index}>
+              {paragraph}
+            </p>
+          ))}
         </div>
         <div className="w-2/6 h-screen p-4">
           <p>Author</p>

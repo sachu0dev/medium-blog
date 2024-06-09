@@ -23,11 +23,11 @@ model User {
 }
 
 model Post {
-  id            String    @id @default(uuid())
+  id            String   @id @default(uuid())
   title         String
   content       String
-  publishedDate DateTime?
-  published     Boolean   @default(false)
-  author        User      @relation(fields: [authorId], references: [id])
+  publishedDate DateTime @default(now())
+  published     Boolean  @default(true)
+  author        User     @relation(fields: [authorId], references: [id])
   authorId      String
 }

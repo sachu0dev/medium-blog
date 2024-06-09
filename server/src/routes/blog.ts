@@ -22,7 +22,6 @@ blogRouter.use("*", authMiddleware);
 
 blogRouter.post("/blog", async (c) => {
   const primsa = await connectPrisma(c.env.DATABASE_URL);
-
   const userId = c.get("userId");
 
   const body = await c.req.json();

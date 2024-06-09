@@ -11,12 +11,14 @@ import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
 import Blogs from "./components/Blogs";
 import { UserContext } from "./utils/context";
+import Header from "./components/Header";
 
 function App() {
   const [userToken, setUserToken] = useState(localStorage.getItem("userToken"));
 
   return (
     <UserContext.Provider value={{ userToken, setUserToken }}>
+      <Header />
       <Outlet />
     </UserContext.Provider>
   );

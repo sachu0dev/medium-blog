@@ -57,6 +57,7 @@ userRouter.post("/signup", checkUser, async (c) => {
   return c.json({
     token: token,
     massage: "signup complete",
+    name: body.name,
   });
 });
 // sigin route
@@ -81,6 +82,7 @@ userRouter.post("/signin", async (c) => {
           return c.json({
             token: token,
             massage: "signin complete",
+            name: user.name,
           });
         }
       }

@@ -24,7 +24,8 @@ export default function Signin() {
     try {
       const res = await axios.post(BACKEND_URL + "user/signin", formData);
       localStorage.setItem("userToken", res.data.token);
-      navigate("/blogs");
+      localStorage.setItem("name", res.data.name);
+      navigate("/blog");
     } catch (err) {
       console.log(err);
     }

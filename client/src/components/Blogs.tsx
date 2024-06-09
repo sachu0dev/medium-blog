@@ -36,7 +36,7 @@ export default function Blogs() {
   return (
     <div className="w-full h-screen p-12">
       <div className="mx-60 px-60">
-        <div className="bg-white h-16 w-full flex items-center border-b-gray-200">
+        <div className="bg-white h-16 w-full flex items-center ">
           <h1 className="text-lg">For you</h1>
         </div>
         {blogs.map((blog) => (
@@ -44,7 +44,6 @@ export default function Blogs() {
         ))}
         <hr />
       </div>
-      <button onClick={fetchBlogs}>cre</button>
     </div>
   );
 }

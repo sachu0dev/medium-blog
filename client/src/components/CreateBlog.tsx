@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { BACKEND_URL } from "../config";
+import { UserContext } from "@/utils/context";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateBlog() {
+  const { userToken } = useContext(UserContext);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -9,6 +14,25 @@ export default function CreateBlog() {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(formData);
+
+    postBlog();
+  };
+
+  const postBlog = async () => {
+    try {
+      const res = await fetch(BACKEND_URL + "blog/blog", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      navigate("/blog/" + data.id);
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <>
