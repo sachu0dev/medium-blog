@@ -1,16 +1,9 @@
-import { PrismaClient } from "@prisma/client/edge";
-import { withAccelerate } from "@prisma/extension-accelerate";
-import { checkUser } from "../middleware";
+import { authMiddleware, checkUser } from "../middleware";
 import bcrypt from "bcryptjs";
-import { decode, sign, verify } from "hono/jwt";
-import api, { connectPrisma } from "../index";
+import { sign } from "hono/jwt";
+import { connectPrisma } from "../index";
 import { Hono } from "hono";
-import {
-  signInInput,
-  signUpInput,
-  bioUpdate,
-} from "@sushilkashyap/medium-common";
-import { Suspense } from "hono/jsx";
+import z from "zod";
 
 const userRouter = new Hono<{
   Bindings: {
@@ -18,6 +11,17 @@ const userRouter = new Hono<{
     JWT_SECRET: string;
   };
 }>();
+
+const signUpInput = z.object({
+  email: z.string().email(),
+  name: z.string().optional(),
+  password: z.string().min(6),
+});
+
+const signInInput = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
 // interface signupUser {
 //   email: string;
 //   name: string;
@@ -86,24 +90,26 @@ userRouter.post("/signin", async (c) => {
     return c.text("error");
   }
 });
-userRouter.put("bio", async (c) => {
-  const prisma = connectPrisma(c.env.DATABASE_URL);
-  const body = await c.req.json();
-  const userId = c.get("userId");
+userRouter.put("bio", authMiddleware, async (c) => {
+  try {
+    const prisma = connectPrisma(c.env.DATABASE_URL);
+    const body = await c.req.json();
+    const userId = c.get("userId");
 
-  const { success } = bioUpdate.safeParse(body);
-  if (!success) return c.json({ massage: "not valid input" });
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
-      bio: body.bio,
-    },
-  });
-  return c.json({
-    massage: "update complete",
-  });
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        bio: body.bio,
+      },
+    });
+    return c.json({
+      massage: "update complete",
+    });
+  } catch (error) {
+    return c.json(error);
+  }
 });
 
 export default userRouter;

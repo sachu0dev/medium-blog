@@ -1,13 +1,7 @@
-import { Prisma, PrismaClient } from "@prisma/client/edge";
-import { withAccelerate } from "@prisma/extension-accelerate";
 import { authMiddleware, checkUser } from "../middleware";
-import bcrypt from "bcryptjs";
-import { decode, sign, verify } from "hono/jwt";
-import api, { connectPrisma } from "../index";
+import { connectPrisma } from "../index";
 import { Hono } from "hono";
-import { connect } from "cloudflare:sockets";
-import { connectPrisma } from "..";
-import { createBlogInput, updateBlogInput } from "@sushilkashyap/medium-common";
+import z from "zod";
 
 const blogRouter = new Hono<{
   Bindings: {
@@ -15,7 +9,15 @@ const blogRouter = new Hono<{
     JWT_SECRET: string;
   };
 }>();
-
+const createBlogInput = z.object({
+  title: z.string(),
+  content: z.string(),
+});
+const updateBlogInput = z.object({
+  title: z.string().optional(),
+  content: z.string().optional(),
+  published: z.boolean(),
+});
 blogRouter.use("*", authMiddleware);
 
 blogRouter.post("/blog", async (c) => {
@@ -42,8 +44,10 @@ blogRouter.put("/blog/:id", async (c) => {
   const prisma = connectPrisma(c.env.DATABASE_URL);
   const body = await c.req.json();
   const postId = c.req.param("id");
-  const { success } = updateBlogInput.safeParse(body);
-  if (!success) return c.text("invalid input");
+  console.log(body);
+
+  const checkInput = await updateBlogInput.safeParse(body);
+  if (!checkInput.success) return c.json(checkInput);
 
   const post = await prisma.post.update({
     where: {
@@ -69,6 +73,14 @@ blogRouter.get("/blog/:id", async (c) => {
     where: {
       id: postId,
     },
+    include: {
+      author: {
+        select: {
+          name: true,
+          bio: true,
+        },
+      },
+    },
   });
   if (post !== null) {
     return c.json(post);
@@ -79,7 +91,19 @@ blogRouter.get("/blog/:id", async (c) => {
 blogRouter.get("/blogs", async (c) => {
   const prisma = connectPrisma(c.env.DATABASE_URL);
 
-  const posts = await prisma.post.findMany();
+  const posts = await prisma.post.findMany({
+    where: {
+      published: true,
+    },
+    include: {
+      author: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
   return c.json(posts);
 });
 

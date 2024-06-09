@@ -1,15 +1,24 @@
-import {} from "react";
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  createBrowserRouter,
+  Outlet,
+  useFetcher,
+  useNavigate,
+} from "react-router-dom";
 import Signup from "./components/Signup";
 import Signin from "./components/Signin";
 import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
 import Blogs from "./components/Blogs";
+import { UserContext } from "./utils/context";
+
 function App() {
+  const [userToken, setUserToken] = useState(localStorage.getItem("userToken"));
+
   return (
-    <>
+    <UserContext.Provider value={{ userToken, setUserToken }}>
       <Outlet />
-    </>
+    </UserContext.Provider>
   );
 }
 
@@ -19,7 +28,7 @@ const AppRouter = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "/Blogs",
+        path: "/Blog",
         element: <Blogs />,
       },
       {
@@ -31,7 +40,7 @@ const AppRouter = createBrowserRouter([
         element: <Signin />,
       },
       {
-        path: "/blog:id",
+        path: "/blog/:id", // Change path to use dynamic parameter ':id'
         element: <Blog />,
       },
       {

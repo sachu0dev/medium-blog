@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { clsx } from "clsx";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { BACKEND_URL } from "../config";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
-    username: "",
+    name: "",
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -17,9 +19,15 @@ export default function Signup() {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(formData);
+    try {
+      const res = await axios.post(BACKEND_URL + "user/signup", formData);
+      localStorage.setItem("userToken", res.data.token);
+      navigate("/blogs");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -39,8 +47,8 @@ export default function Signup() {
                 </label>
                 <input
                   type="text"
-                  name="username"
-                  value={formData.username}
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Enter your username"
                   className=" text-lg p-2 my-2  border border-gray-300 rounded-md w-full"

@@ -1,21 +1,27 @@
 import React from "react";
 
-export default function BlogList() {
+import { formatDistanceToNow } from "date-fns";
+import { useNavigate } from "react-router-dom";
+
+export default function BlogList({ blog }) {
+  const timeAgo = formatDistanceToNow(new Date(blog.publishedDate), {
+    addSuffix: true,
+  });
+  const navigate = useNavigate();
   return (
     <>
-      <div className="w-full flex flex-wrap justify-between p-4 my-4  border-b md:p-12 ">
+      <div
+        onClick={() => navigate(`/blog/${blog.id}`)}
+        className="w-full flex flex-wrap justify-between p-4 my-4  border-b md:p-12 "
+      >
         <div className="flex flex-col w-2/3 ">
           <p className="text-gray-500 text-sm">
-            username <span>• 2 days ago</span>
+            {blog.author.name} <span>• {timeAgo}</span>
           </p>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold mt-2">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel, cum!
-            </h1>
+            <h1 className="text-xl md:text-2xl font-bold mt-2">{blog.title}</h1>
             <p className="mt-2">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Accusantium odio vero recusandae! Nam quidem quod doloremque in
-              accusantium cumque quo.
+              {blog.content.split(" ").slice(0, 20).join(" ")}
             </p>
           </div>
         </div>

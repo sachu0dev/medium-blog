@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { BACKEND_URL } from "../config";
+import axios from "axios";
 
 export default function Signin() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -15,9 +18,16 @@ export default function Signin() {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(formData);
+
+    try {
+      const res = await axios.post(BACKEND_URL + "user/signin", formData);
+      localStorage.setItem("userToken", res.data.token);
+      navigate("/blogs");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
