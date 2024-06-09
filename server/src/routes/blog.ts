@@ -18,7 +18,7 @@ const blogRouter = new Hono<{
 
 blogRouter.use("*", authMiddleware);
 
-blogRouter.post("/post", async (c) => {
+blogRouter.post("/blog", async (c) => {
   const primsa = await connectPrisma(c.env.DATABASE_URL);
 
   const userId = c.get("userId");
@@ -38,7 +38,7 @@ blogRouter.post("/post", async (c) => {
   });
 });
 
-blogRouter.put("/post/:id", async (c) => {
+blogRouter.put("/blog/:id", async (c) => {
   const prisma = connectPrisma(c.env.DATABASE_URL);
   const body = await c.req.json();
   const postId = c.req.param("id");
@@ -60,7 +60,7 @@ blogRouter.put("/post/:id", async (c) => {
   });
 });
 
-blogRouter.get("/post/:id", async (c) => {
+blogRouter.get("/blog/:id", async (c) => {
   const prisma = connectPrisma(c.env.DATABASE_URL);
   const postId = c.req.param("id");
   console.log(postId);
@@ -76,7 +76,7 @@ blogRouter.get("/post/:id", async (c) => {
   return c.text("post not found");
 });
 
-blogRouter.get("/bulk", async (c) => {
+blogRouter.get("/blogs", async (c) => {
   const prisma = connectPrisma(c.env.DATABASE_URL);
 
   const posts = await prisma.post.findMany();

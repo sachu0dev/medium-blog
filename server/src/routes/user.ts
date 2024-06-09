@@ -5,7 +5,11 @@ import bcrypt from "bcryptjs";
 import { decode, sign, verify } from "hono/jwt";
 import api, { connectPrisma } from "../index";
 import { Hono } from "hono";
-import { signInInput, signUpInput } from "@sushilkashyap/medium-common";
+import {
+  signInInput,
+  signUpInput,
+  bioUpdate,
+} from "@sushilkashyap/medium-common";
 import { Suspense } from "hono/jsx";
 
 const userRouter = new Hono<{
@@ -25,6 +29,10 @@ const userRouter = new Hono<{
 // }
 // authmiddleware call
 
+// test route
+userRouter.get("/test", async (c) => {
+  return c.text("test route");
+});
 // signup route
 userRouter.post("/signup", checkUser, async (c) => {
   const prisma = connectPrisma(c.env.DATABASE_URL);
@@ -77,6 +85,25 @@ userRouter.post("/signin", async (c) => {
     console.log(error);
     return c.text("error");
   }
+});
+userRouter.put("bio", async (c) => {
+  const prisma = connectPrisma(c.env.DATABASE_URL);
+  const body = await c.req.json();
+  const userId = c.get("userId");
+
+  const { success } = bioUpdate.safeParse(body);
+  if (!success) return c.json({ massage: "not valid input" });
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      bio: body.bio,
+    },
+  });
+  return c.json({
+    massage: "update complete",
+  });
 });
 
 export default userRouter;
