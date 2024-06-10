@@ -12,6 +12,7 @@ import CreateBlog from "./components/CreateBlog";
 import Blogs from "./components/Blogs";
 import { UserContext } from "./utils/context";
 import Header from "./components/Header";
+import Profile from "./components/Profile";
 
 function App() {
   const [userToken, setUserToken] = useState(localStorage.getItem("userToken"));
@@ -32,6 +33,10 @@ const AppRouter = createBrowserRouter([
       {
         path: "/Blog",
         element: <Blogs />,
+      },
+      {
+        path: "/",
+        element: <Profile />,
       },
       {
         path: "/signup",

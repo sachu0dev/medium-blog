@@ -33,19 +33,27 @@ export const checkUser = async (c, next) => {
 
 export const authMiddleware = async (c, next) => {
   console.log("it reached here");
-
-  const token = await c.req.header("Authorization");
-  if (token !== undefined) {
-    const trimedToken = token.replace("Bearer ", "");
-    const decoded = await verify(trimedToken, "secret");
-    const user = await connectPrisma(c.env.DATABASE_URL).user.findUnique({
-      where: {
-        email: decoded.email,
-      },
-    });
-    if (user) {
-      c.set("userId", user.id);
-      await next();
+  try {
+    const token = await c.req.header("Authorization");
+    if (token !== undefined) {
+      const trimedToken = token.replace("Bearer ", "");
+      const decoded = await verify(trimedToken, "secret");
+      const user = await connectPrisma(c.env.DATABASE_URL).user.findUnique({
+        where: {
+          email: decoded.email,
+        },
+      });
+      if (user) {
+        c.set("userId", user.id);
+        await next();
+      } else {
+        c.text("unauthorized user");
+      }
+    } else {
+      c.text("No token provided");
     }
+  } catch (error) {
+    console.log(error);
+    c.text("unauthorized user");
   }
 };

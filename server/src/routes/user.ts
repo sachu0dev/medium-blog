@@ -92,25 +92,74 @@ userRouter.post("/signin", async (c) => {
     return c.text("error");
   }
 });
-userRouter.put("bio", authMiddleware, async (c) => {
+userRouter.get("/profile", authMiddleware, async (c) => {
   try {
     const prisma = connectPrisma(c.env.DATABASE_URL);
-    const body = await c.req.json();
     const userId = c.get("userId");
 
-    await prisma.user.update({
+    if (!userId) {
+      return c.json({ error: "User ID not found in request context" }, 400);
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        name: true,
+        email: true,
+        bio: true,
+        posts: true,
+      },
+    });
+
+    if (!user) {
+      return c.json({ error: "User not found" }, 404);
+    }
+
+    return c.json(user);
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    return c.json({ error: "Unable to fetch user profile" }, 500);
+  }
+});
+
+userRouter.put("/profile", authMiddleware, async (c) => {
+  try {
+    const prisma = connectPrisma(c.env.DATABASE_URL);
+    const userId = c.get("userId");
+    const { name, bio, post } = await c.req.json();
+
+    // Update user information
+    const updatedUser = await prisma.user.update({
       where: {
         id: userId,
       },
       data: {
-        bio: body.bio,
+        name: name,
+        bio: bio,
       },
     });
-    return c.json({
-      massage: "update complete",
+
+    // Update published status of a single user post
+
+    // Fetch updated user profile with posts
+    const updatedProfile = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        name: true,
+        email: true,
+        bio: true,
+        posts: true,
+      },
     });
+
+    return c.json(updatedProfile);
   } catch (error) {
-    return c.json(error);
+    console.error("Error updating user profile:", error);
+    return c.json({ error: "Unable to update user profile" }, 500);
   }
 });
 

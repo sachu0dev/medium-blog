@@ -14,8 +14,6 @@ const createBlogInput = z.object({
   content: z.string(),
 });
 const updateBlogInput = z.object({
-  title: z.string().optional(),
-  content: z.string().optional(),
   published: z.boolean(),
 });
 blogRouter.use("*", authMiddleware);
@@ -39,28 +37,41 @@ blogRouter.post("/blog", async (c) => {
   });
 });
 
-blogRouter.put("/blog/:id", async (c) => {
-  const prisma = connectPrisma(c.env.DATABASE_URL);
-  const body = await c.req.json();
-  const postId = c.req.param("id");
-  console.log(body);
+blogRouter.put("/publish/:id", async (c) => {
+  try {
+    const prisma = connectPrisma(c.env.DATABASE_URL);
+    const body = await c.req.json();
+    const postId = c.req.param("id");
+    const userId = c.get("userId");
+    console.log(body);
 
-  const checkInput = await updateBlogInput.safeParse(body);
-  if (!checkInput.success) return c.json(checkInput);
+    const checkInput = await updateBlogInput.safeParse(body);
+    if (!checkInput.success) return c.json(checkInput);
 
-  const post = await prisma.post.update({
-    where: {
-      id: postId,
-    },
-    data: {
-      title: body.title,
-      content: body.content,
-      published: body.published,
-    },
-  });
-  return c.json({
-    id: post.id,
-  });
+    const post = await prisma.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        published: body.published,
+      },
+    });
+    const updatedProfile = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        name: true,
+        email: true,
+        bio: true,
+        posts: true,
+      },
+    });
+
+    return c.json(updatedProfile);
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+  }
 });
 
 blogRouter.get("/blog/:id", async (c) => {

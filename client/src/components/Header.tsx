@@ -37,7 +37,12 @@ export default function Header() {
         </h1>
       </div>
       <div className="flex items-center gap-10">
-        <h1 className="text-white font-bold">Hello, {user}</h1>
+        <h1
+          onClick={() => navigation("/")}
+          className="text-white cursor-pointer font-bold"
+        >
+          Hello, {user}
+        </h1>
         {userToken ? (
           <button
             onClick={() => {
