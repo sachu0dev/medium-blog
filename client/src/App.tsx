@@ -14,7 +14,7 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate("blog");
+    navigate("/blog");
   }, []);
 
   return (

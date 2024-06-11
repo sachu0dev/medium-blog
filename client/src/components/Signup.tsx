@@ -49,9 +49,7 @@ export default function Signup() {
       localStorage.setItem("userToken", res.data.token);
       localStorage.setItem("name", res.data.name);
       setUserToken(res.data.token);
-      setTimeout(() => {
-        navigate("/blog");
-      }, 1000);
+      navigate("/blog");
     } catch (err) {
       console.log(err);
     }
