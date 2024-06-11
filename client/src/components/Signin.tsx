@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BACKEND_URL } from "../config";
+import { BACKEND_URL } from "../config.ts";
 import axios from "axios";
 
 export default function Signin() {
@@ -10,7 +10,7 @@ export default function Signin() {
   });
   const navigate = useNavigate();
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData({
       ...formData,
@@ -18,7 +18,9 @@ export default function Signin() {
     });
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     event.preventDefault();
 
     try {

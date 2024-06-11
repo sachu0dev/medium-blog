@@ -1,12 +1,26 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../utils/context.js";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import fetch from "../../../server/node_modules/unenv/runtime/npm/node-fetch.d";
-import { BACKEND_URL } from "../config";
+import { BACKEND_URL } from "../config.ts";
 
-export default function Blog() {
-  const { userToken } = useContext(UserContext);
-  const [blog, setBlog] = useState(null);
+export default function Blog(): JSX.Element {
+  interface Author {
+    name: string;
+    bio: string;
+  }
+
+  interface BlogData {
+    id: string;
+    title: string;
+    content: string;
+    publishedDate: string;
+    published: boolean;
+    authorId: string;
+    author: Author;
+  }
+  const { userToken } = useContext(UserContext) as { userToken: string | null };
+  const [blog, setBlog] = useState<BlogData | null>(null);
   const { id } = useParams();
   const navigate = useNavigate();
   useEffect(() => {
@@ -18,7 +32,7 @@ export default function Blog() {
     }
   }, []);
 
-  const fetchBlog = async () => {
+  const fetchBlog = async (): Promise<void> => {
     console.log(id);
     try {
       const res = await fetch(BACKEND_URL + "blog/blog/" + id, {
@@ -63,6 +77,8 @@ export default function Blog() {
       </div>
     </>
   ) : (
-    "Loading"
+    <>
+      <p>Loading...</p>
+    </>
   );
 }

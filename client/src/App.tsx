@@ -1,10 +1,5 @@
-import { useEffect, useState } from "react";
-import {
-  createBrowserRouter,
-  Outlet,
-  useFetcher,
-  useNavigate,
-} from "react-router-dom";
+import { useState } from "react";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import Signup from "./components/Signup";
 import Signin from "./components/Signin";
 import Blog from "./components/Blog";

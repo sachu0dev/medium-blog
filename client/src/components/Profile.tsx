@@ -1,14 +1,36 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../config";
+import { BACKEND_URL } from "../config.ts";
 import { UserContext } from "@/utils/context";
 import { useNavigate } from "react-router-dom";
 
-function Profile() {
-  const [profile, setProfile] = useState({});
-  const { userToken } = useContext(UserContext);
+interface Profile {
+  email: string;
+  name: string;
+  bio: string;
+  posts?: Post[];
+}
+
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  published: boolean;
+}
+
+interface UserContextValue {
+  userToken: string | null;
+}
+
+function ProfileComponent() {
+  const [profile, setProfile] = useState<Profile>({
+    email: "",
+    name: "",
+    bio: "",
+  });
+  const { userToken } = useContext(UserContext) as UserContextValue;
   const [editMode, setEditMode] = useState(false);
-  const [userForm, setUserFrom] = useState({
+  const [userForm, setUserForm] = useState({
     name: "",
     bio: "",
   });
@@ -19,13 +41,13 @@ function Profile() {
 
   const fetchUserData = async () => {
     try {
-      const res = await axios.get(BACKEND_URL + "user/profile", {
+      const res = await axios.get<Profile>(BACKEND_URL + "user/profile", {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
       });
       setProfile(res.data);
-      setUserFrom({
+      setUserForm({
         name: res.data.name,
         bio: res.data.bio,
       });
@@ -38,7 +60,7 @@ function Profile() {
     console.log("it ran");
 
     try {
-      const res = await axios.put(
+      await axios.put(
         BACKEND_URL + "user/profile",
         {
           name: userForm.name,
@@ -65,12 +87,12 @@ function Profile() {
           <input
             className="text-2xl block border-2 rounded-lg p-2"
             value={userForm.name}
-            onChange={(e) => setUserFrom({ name: e.target.value })}
+            onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
           />
           <input
             className="text-xl block border-2 rounded-lg p-2"
             value={userForm.bio}
-            onChange={(e) => setUserFrom({ bio: e.target.value })}
+            onChange={(e) => setUserForm({ ...userForm, bio: e.target.value })}
           />
 
           <button
@@ -106,22 +128,28 @@ function Profile() {
       <div>
         <h1 className="text-3xl font-bold text-gray-600">My blogs</h1>
         {profile.posts?.map((post) => (
-          <Posts key={post._id} post={post} setProfile={setProfile} />
+          <Posts key={post.id} post={post} setProfile={setProfile} />
         ))}
       </div>
     </div>
   );
 }
 
-const Posts = ({ post, setProfile }) => {
+interface PostsProps {
+  post: Post;
+  setProfile: React.Dispatch<React.SetStateAction<Profile>>;
+}
+
+const Posts: React.FC<PostsProps> = ({ post, setProfile }) => {
   const navigate = useNavigate();
-  const [publishForm, setPublishForm] = useState({
+  const [publishForm] = useState({
     id: post.id,
     published: post.published,
   });
+
   const handleSubmit = async () => {
     try {
-      const res = await axios.put(
+      const res = await axios.put<Profile>(
         BACKEND_URL + `blog/publish/${publishForm.id}`,
         {
           published: !post.published,
@@ -137,6 +165,7 @@ const Posts = ({ post, setProfile }) => {
       console.log(err);
     }
   };
+
   return (
     <div className="flex justify-between items-center border-2 rounded-lg p-4 my-4">
       <div className="w-4/5">
@@ -161,4 +190,4 @@ const Posts = ({ post, setProfile }) => {
   );
 };
 
-export default Profile;
+export default ProfileComponent;

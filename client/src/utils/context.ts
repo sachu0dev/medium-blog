@@ -1,3 +1,8 @@
 import { createContext } from "react";
 
-export const UserContext = createContext();
+interface UserContextValue {
+  userToken: string | null;
+  setUserToken: (token: string | null) => void;
+}
+
+export const UserContext = createContext<UserContextValue | null>(null);
