@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { BACKEND_URL } from "../config";
 import { UserContext } from "@/utils/context";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface FormData {
   title: string;
@@ -36,7 +37,7 @@ export default function CreateBlog() {
 
   const postBlog = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}blog/blog`, {
+      const res = await axios.post(`${BACKEND_URL}blog/blog`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
