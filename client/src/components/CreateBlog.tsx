@@ -22,7 +22,6 @@ export default function CreateBlog() {
   });
 
   const handlePublish = async () => {
-    console.log(formData);
     try {
       const res = await axios.post(
         `${BACKEND_URL}blog/blog`,
@@ -37,7 +36,9 @@ export default function CreateBlog() {
           },
         }
       );
-      navigate(`/blog/${res.data.id}`);
+      if (res.data.id) {
+        navigate(`/blog/${res.data.id}`);
+      }
     } catch (err) {
       console.log(err);
     }

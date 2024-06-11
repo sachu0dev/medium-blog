@@ -32,7 +32,6 @@ export const checkUser = async (c, next) => {
 };
 
 export const authMiddleware = async (c, next) => {
-  console.log("it reached here");
   try {
     const token = await c.req.header("Authorization");
     if (token !== undefined) {
@@ -53,7 +52,6 @@ export const authMiddleware = async (c, next) => {
       c.text("No token provided");
     }
   } catch (error) {
-    console.log(error);
     c.text("unauthorized user");
   }
 };

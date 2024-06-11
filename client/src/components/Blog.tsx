@@ -28,21 +28,18 @@ export default function Blog(): JSX.Element {
   useEffect(() => {
     if (!userToken) {
       navigate("/signin");
-      console.log("no token");
     } else {
       fetchBlog();
     }
   }, []);
 
   const fetchBlog = async (): Promise<void> => {
-    console.log(id);
     try {
       const res = await axios.get(`${BACKEND_URL}blog/blog/${id}`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      console.log(res.data);
       setBlog(res.data);
     } catch (err) {
       console.log(err);

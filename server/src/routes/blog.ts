@@ -43,7 +43,6 @@ blogRouter.put("/publish/:id", async (c) => {
     const body = await c.req.json();
     const postId = c.req.param("id");
     const userId = c.get("userId");
-    console.log(body);
 
     const checkInput = await updateBlogInput.safeParse(body);
     if (!checkInput.success) return c.json(checkInput);

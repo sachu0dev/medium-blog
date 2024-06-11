@@ -52,7 +52,6 @@ userRouter.post("/signup", checkUser, async (c) => {
     },
   });
   const token = await sign({ email: body.email }, "secret");
-  console.log(token);
 
   return c.json({
     token: token,
@@ -77,7 +76,6 @@ userRouter.post("/signin", async (c) => {
       if (user) {
         if (user.password !== hashedPassword) {
           const token = await sign({ email: user.email }, "secret");
-          console.log(token);
 
           return c.json({
             token: token,
@@ -88,7 +86,6 @@ userRouter.post("/signin", async (c) => {
       }
     }
   } catch (error) {
-    console.log(error);
     return c.text("error");
   }
 });

@@ -78,7 +78,7 @@ function ProfileComponent() {
   };
 
   return (
-    <div className="mx-60 my-12 flex flex-col p-12 rounded-xl h-screen shadow-xl">
+    <div className="mx-60 my-12 flex flex-col p-12 rounded-xl h-auto shadow-xl">
       {editMode ? (
         <div>
           <h1>{profile.email}</h1>

@@ -29,7 +29,6 @@ export default function Blogs() {
   useEffect(() => {
     if (!userToken) {
       navigate("/signin");
-      console.log("no token");
     } else {
       fetchBlogs();
     }
