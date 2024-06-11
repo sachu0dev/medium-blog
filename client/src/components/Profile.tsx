@@ -34,9 +34,14 @@ function ProfileComponent() {
     name: "",
     bio: "",
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUserData();
+    if (!userToken) {
+      navigate("/signin");
+    } else {
+      fetchUserData();
+    }
   }, []);
 
   const fetchUserData = async () => {
