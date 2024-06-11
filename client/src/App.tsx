@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { createBrowserRouter, Outlet, useNavigate } from "react-router-dom";
 import Signup from "./components/Signup";
 import Signin from "./components/Signin";
 import Blog from "./components/Blog";
@@ -11,6 +11,15 @@ import Profile from "./components/Profile";
 
 function App() {
   const [userToken, setUserToken] = useState(localStorage.getItem("userToken"));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userToken) {
+      navigate("/blog");
+    } else {
+      navigate("/signin");
+    }
+  }, [userToken]);
 
   return (
     <UserContext.Provider value={{ userToken, setUserToken }}>
