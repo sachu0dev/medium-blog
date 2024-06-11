@@ -10,8 +10,8 @@ const blogRouter = new Hono<{
   };
 }>();
 const createBlogInput = z.object({
-  title: z.string(),
-  content: z.string(),
+  title: z.string().min(3),
+  content: z.string().min(3),
 });
 const updateBlogInput = z.object({
   published: z.boolean(),

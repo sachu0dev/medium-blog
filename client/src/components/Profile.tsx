@@ -57,8 +57,6 @@ function ProfileComponent() {
   };
 
   const handleSubmit = async () => {
-    console.log("it ran");
-
     try {
       await axios.put(
         BACKEND_URL + "user/profile",
