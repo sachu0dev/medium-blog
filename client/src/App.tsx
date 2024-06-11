@@ -14,12 +14,8 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (userToken) {
-      navigate("/blog");
-    } else {
-      navigate("/signin");
-    }
-  }, [userToken]);
+    navigate("blog");
+  }, []);
 
   return (
     <UserContext.Provider value={{ userToken, setUserToken }}>
